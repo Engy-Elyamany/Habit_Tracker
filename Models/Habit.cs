@@ -1,14 +1,18 @@
+using HabitTracker.Services;
+
 namespace HabitTracker.Models
 {
     class Habit
 
     {
 
-        public int id = 0;
-        public string habitName;
-        public string habitDescription;
-        public Day habitFrequency;
-        public Habit(int id, string habitName, string habitDescription, Day habitFrequency)
+       private int id;
+       private string habitName;
+       private string habitDescription;
+       private Day habitFrequency;
+
+    public int HabitId { get { return id; } set{ id = value; } }
+        public Habit(string habitName, string habitDescription, Day habitFrequency, int id = 0)
         {
             this.id = id;
             this.habitName = habitName;
@@ -26,6 +30,20 @@ namespace HabitTracker.Models
             WED = 0b_0001_0000,
             THU = 0b_0010_0000,
             FRI = 0b_0100_0000,
+        }
+        
+         public static void IterateOneHabit()
+        {
+            foreach (var Habit in HabitManager.AllHabits)
+            {
+                Console.WriteLine(
+                $"Habit ID = {Habit.id}" +
+                $"\nHabit Name = {Habit.habitName}" +
+                $"\nHabit Description = {Habit.habitDescription}" +
+                $"\nHabit Frequency = {Habit.habitFrequency}"
+                );
+                Console.WriteLine();
+            }
         }
 
     }
