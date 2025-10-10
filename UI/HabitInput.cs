@@ -6,34 +6,90 @@ namespace HabitTracker.UI
 {
     class HabitInput
     {
-        public static int[] ChooseHabitFrequencyWeekly()
+
+        public static void GetValidString(ref string? str, string printStatement)
         {
-            System.Console.Write("How many days of the week? ");
-            int daysNumber = Convert.ToInt32(Console.ReadLine());
-            int[] HabitFreqChoice = { (int)Habit.Day.NONE };
-            foreach (Habit.Day day in Enum.GetValues(typeof(Habit.Day)))
+            do
             {
-                Console.WriteLine($"{day} : {(int)day}");
-            }
+                Console.Write(printStatement);
+                str = Console.ReadLine();
+                if (InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str))
+                {
+                    Console.WriteLine("Please Enter a valid Input");
+                }
+            } while (InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str));
+        }
+        public static Habit.Day ChooseHabitFrequencyWeekly()
+        {
+            Habit.Day HabitFrequency = 0;
+            Habit.Day choosenFreqDay = 0;
+            int getUserChoiceFromMenu = 1;
 
-            for (int i = 1; i <= daysNumber; i++)
+            while (getUserChoiceFromMenu != 0)
             {
-                HabitFreqChoice[i] = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Your Choice: ");
+                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
+                if (getUserChoiceFromMenu > 8 || getUserChoiceFromMenu < 0)
+                {
+                    Console.WriteLine("Invalid Input, Pleasw choose from menu");
+                    continue;
+                }
+                switch (getUserChoiceFromMenu)
+                {
+                    case 1:
+                        choosenFreqDay = Habit.Day.SAT;
+                        break;
+                    case 2:
+                        choosenFreqDay = Habit.Day.SUN;
+                        break;
+                    case 3:
+                        choosenFreqDay = Habit.Day.MON;
+                        break;
+                    case 4:
+                        choosenFreqDay = Habit.Day.TUE;
+                        break;
+                    case 5:
+                        choosenFreqDay = Habit.Day.WED;
+                        break;
+                    case 6:
+                        choosenFreqDay = Habit.Day.THU;
+                        break;
+                    case 7:
+                        choosenFreqDay = Habit.Day.FRI;
+                        break;
+                    case 8:
+                        choosenFreqDay = Habit.Day.ALLWEEK;
+                        getUserChoiceFromMenu = 0;
+                        break;
+                    default:
+                        break;
+                }
+                HabitFrequency |= choosenFreqDay;
             }
-
-            return HabitFreqChoice;
-
+            return HabitFrequency;
         }
         public static Habit ReadInputFromUser()
         {
             string? InputName = "Default Habit Name";
             string? InputDescription = "Default Habit Description";
+            Habit.Day HabitFrequency;
 
-            InputValidator.ValidateString(ref InputName, "Enter Habit Name: ");
-            InputValidator.ValidateString(ref InputDescription, "Enter Habit Description: ");
+            GetValidString(ref InputName, "Enter Habit Name: ");
+            GetValidString(ref InputDescription, "Enter Habit Description: ");
 
-            Console.Write("Choose Habit Frequency:");
-            int[] HabitFrequency = ChooseHabitFrequencyWeekly();
+            Console.WriteLine(
+                "Choose Habit Frequency:\n" +
+                "1.Saturday\n" +
+                "2.Sunday\n" +
+                "3.Monday\n" +
+                "4.Tuesday\n" +
+                "5.Wednesday\n" +
+                "6.Thursday\n" +
+                "7.Friday\n" +
+                "8.All Week\n" +
+                "Press 0 When Done Choosing"
+            );
+            HabitFrequency = ChooseHabitFrequencyWeekly();
 
             Console.WriteLine();
 

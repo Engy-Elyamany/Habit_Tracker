@@ -7,11 +7,10 @@ namespace HabitTracker.Models
         private int id;
         private string habitName;
         private string habitDescription;
-        //private Day habitFrequency;
-        int[] habitFrequency;
+        private Day habitFrequency;
 
         public int HabitId { get { return id; } set { id = value; } }
-        public Habit(string habitName, string habitDescription, int[] habitFrequency, int id = 0)
+        public Habit(string habitName, string habitDescription, Day habitFrequency, int id = 0)
         {
             this.id = id;
             this.habitName = habitName;
@@ -22,7 +21,6 @@ namespace HabitTracker.Models
         [Flags]
         public enum Day
         {
-            NONE = 0b_0000_0000,
             SAT = 0b_0000_0001,
             SUN = 0b_0000_0010,
             MON = 0b_0000_0100,
@@ -40,12 +38,8 @@ namespace HabitTracker.Models
                 Console.WriteLine(
                 $"Habit ID = {Habit.id}" +
                 $"\nHabit Name = {Habit.habitName}" +
-                $"\nHabit Description = {Habit.habitDescription}" 
-                );
-                for (int i = 1; i < Habit.habitFrequency.Length; i++)
-                {
-                    System.Console.Write($"(Day)habitFrequency[i] ");
-                }
+                $"\nHabit Description = {Habit.habitDescription}" +
+                $"\nHabit Frequency = {Habit.habitFrequency}");
                 Console.WriteLine();
             }
         }

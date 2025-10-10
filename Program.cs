@@ -5,7 +5,8 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        HabitInput.ReadInputFromUser();
+        
+        HabitManager.CreateHabit();
         HabitManager.ViewAllHabits();
     }
 }
