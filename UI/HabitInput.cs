@@ -6,7 +6,6 @@ namespace HabitTracker.UI
 {
     class HabitInput
     {
-
         public static void GetValidString(ref string? str, string printStatement)
         {
             do
@@ -97,5 +96,18 @@ namespace HabitTracker.UI
 
         }
 
+        public static Habit ChooseHabitIDToDelete()
+        {
+            Console.WriteLine("Choose a Habit by id to delete:");
+            HabitManager.ViewAllHabitsById();
+            int getUserChoiceFromMenu;
+            do
+            {
+                Console.Write("Your Choice: ");
+                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
+            } while (!HabitManager.AllHabits.Contains(HabitManager.AllHabits[getUserChoiceFromMenu - 1]));
+            return HabitManager.AllHabits[getUserChoiceFromMenu - 1];
+
+        }
     }
 }

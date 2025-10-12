@@ -3,7 +3,6 @@ namespace HabitTracker.Utilities
     class InputValidator
     {
         public static bool IsContainNullOrWhiteSpace(string? str) => string.IsNullOrWhiteSpace(str);
-
         public static bool IsContainDigitsOrChar(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -15,6 +14,8 @@ namespace HabitTracker.Utilities
                 }
                 else
                 {
+                    if (char.IsWhiteSpace(str[i]))
+                        return false;
                     return true;
                 }
             }

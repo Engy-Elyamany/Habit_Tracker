@@ -7,6 +7,10 @@ internal class Program
     {
         
         HabitManager.CreateHabit();
+        HabitManager.CreateHabit();
+        HabitManager.CreateHabit();
+        HabitManager.ViewAllHabits();
+        HabitManager.DeleteHabit();
         HabitManager.ViewAllHabits();
     }
 }

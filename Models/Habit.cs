@@ -4,18 +4,16 @@ namespace HabitTracker.Models
 {
     class Habit
     {
-        private int id;
-        private string habitName;
-        private string habitDescription;
-        private Day habitFrequency;
-
-        public int HabitId { get { return id; } set { id = value; } }
-        public Habit(string habitName, string habitDescription, Day habitFrequency, int id = 0)
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public Day Frequency { get; set; }
+        public Habit(string habitName, string habitDescription, Day habitFrequency, int habitId = 0)
         {
-            this.id = id;
-            this.habitName = habitName;
-            this.habitDescription = habitDescription;
-            this.habitFrequency = habitFrequency;
+            Id = habitId;
+            Name = habitName;
+            Description = habitDescription;
+            Frequency = habitFrequency;
         }
 
         [Flags]
@@ -29,19 +27,6 @@ namespace HabitTracker.Models
             THU = 0b_0010_0000,
             FRI = 0b_0100_0000,
             ALLWEEK = 0b_0111_1111
-        }
-
-        public static void IterateOneHabit()
-        {
-            foreach (var Habit in HabitManager.AllHabits)
-            {
-                Console.WriteLine(
-                $"Habit ID = {Habit.id}" +
-                $"\nHabit Name = {Habit.habitName}" +
-                $"\nHabit Description = {Habit.habitDescription}" +
-                $"\nHabit Frequency = {Habit.habitFrequency}");
-                Console.WriteLine();
-            }
         }
 
     }
