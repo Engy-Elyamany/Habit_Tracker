@@ -8,8 +8,10 @@ namespace HabitTracker.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public Day Frequency { get; set; }
-        public Habit(string habitName, string habitDescription, Day habitFrequency, int habitId = 0)
+        public bool MarkedAsDone { get; set; }
+        public Habit(string habitName, string habitDescription, Day habitFrequency, int habitId = 0, bool habitStatus = false)
         {
+            MarkedAsDone = habitStatus;
             Id = habitId;
             Name = habitName;
             Description = habitDescription;
