@@ -75,54 +75,33 @@ namespace HabitTracker.Services
             }
 
         }
-        public static void ViewAllHabits()
+        public static void MarkHabitAsDone()
         {
-            foreach (var Habit in AllHabits)
+            Console.WriteLine("========= Mark Habits =========");
+            HabitOutput.ViewTodayHabits();
+            Habit desiredHabit = HabitInput.ChooseHabitByID();
+            if (!desiredHabit.MarkedAsDone)
             {
-                Console.WriteLine(
-                $"Habit ID = {Habit.Id}" +
-                $"\nHabit Name = {Habit.Name}" +
-                $"\nHabit Description = {Habit.Description}" +
-                $"\nHabit Frequency = {Habit.Frequency}");
-                Console.WriteLine();
+                desiredHabit.MarkedAsDone = true;
+                Console.WriteLine($"Habit No.{desiredHabit.Id} completed successfuly");
             }
+
+            else
+                Console.WriteLine("Habit already completed for today");
         }
-        public static void ViewAllHabitsById()
+        public static void UndoMarkedHabit()
         {
-            foreach (var habit in AllHabits)
+            Console.WriteLine("========= Undo compeletion =========");
+            HabitOutput.ViewAllHabits();
+            Habit desiredHabit = HabitInput.ChooseHabitByID();
+            if (desiredHabit.MarkedAsDone)
             {
-                Console.WriteLine(
-               $"ID = {habit.Id} : " +
-                $"Name = {habit.Name}");
-
-                Console.WriteLine();
+                desiredHabit.MarkedAsDone = false;
+                Console.WriteLine("Compeletion Undone");
             }
-        }
 
-        public static void ViewHabitDetails(Habit habit)
-        {
-            Console.WriteLine(
-                $"ID = {habit.Id} : " +
-                $"Name = {habit.Name}");
-                Console.WriteLine();
-        }
-        public static void ViewTodayHabits()
-        {
-            DayOfWeek today = DateTime.Today.DayOfWeek;
-            System.Console.WriteLine($"========= {today}'s Habits =========");
-            bool habitExistToday = false;
-            foreach (var habit in AllHabits)
-            {
-                bool isTheHabitToday = Convert.ToBoolean(((int)habit.Frequency >> (int)today) & 1);
-                if (isTheHabitToday)
-                {
-                    habitExistToday = true;
-                    ViewHabitDetails(habit);
-                }
-            }
-            if (!habitExistToday)
-                System.Console.WriteLine("No habits Today");
-
+            else
+                Console.WriteLine("Habit is already not marked");
         }
     }
 }
