@@ -18,22 +18,18 @@ namespace HabitTracker.UI
                 }
             } while (InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str));
         }
-        public static Habit.Day ChooseHabitFrequencyWeekly()
+        public static void GetHabitFrequencyWeekly(ref Habit.Day HabitFrequency, string printStatement)
         {
-            Habit.Day HabitFrequency = 0;
+            Console.WriteLine(printStatement);
+            //Habit.Day HabitFrequency = 0;
             Habit.Day choosenFreqDay = 0;
-            int getUserChoiceFromMenu = 1;
+            int userChoice = 1;
 
-            while (getUserChoiceFromMenu != 0)
+            while (userChoice != 0)
             {
-                Console.Write("Your Choice: ");
-                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
-                if (getUserChoiceFromMenu > 8 || getUserChoiceFromMenu < 0)
-                {
-                    Console.WriteLine("Invalid Input, Pleasw choose from menu");
+                if (!InputValidator.GetValidUserChoiceFromMenu(ref userChoice, "Your Day Choice", 0, 8))
                     continue;
-                }
-                switch (getUserChoiceFromMenu)
+                switch (userChoice)
                 {
                     case 1:
                         choosenFreqDay = Habit.Day.SAT;
@@ -58,26 +54,47 @@ namespace HabitTracker.UI
                         break;
                     case 8:
                         choosenFreqDay = Habit.Day.ALLWEEK;
-                        getUserChoiceFromMenu = 0;
+                        userChoice = 0;
                         break;
                     default:
                         break;
                 }
                 HabitFrequency |= choosenFreqDay;
             }
-            return HabitFrequency;
         }
-        public static Habit ReadInputFromUser()
+        public static Habit ChooseHabitByID()
+        {
+            Console.WriteLine("Choose a Habit by id:");
+            HabitManager.ViewAllHabitsById();
+            int getUserChoiceFromMenu;
+            do
+            {
+                Console.Write("Your Id Choice: ");
+                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
+            } while (!HabitManager.AllHabits.Contains(HabitManager.AllHabits[getUserChoiceFromMenu - 1]));
+            return HabitManager.AllHabits[getUserChoiceFromMenu - 1];
+
+        }
+        public static void EditHabitUI()
+        {
+            System.Console.WriteLine(
+                $"1.Edit Habit Name" +
+                $"\n2.Edit Habit Description" +
+                $"\n3.Edit Habit Frequency" +
+                $"\nTo Exit press 0"
+            );
+
+        }
+        public static Habit ReadHabitFromUser()
         {
             string? InputName = "Default Habit Name";
             string? InputDescription = "Default Habit Description";
-            Habit.Day HabitFrequency;
+            Habit.Day HabitFrequency = 0;
 
             GetValidString(ref InputName, "Enter Habit Name: ");
             GetValidString(ref InputDescription, "Enter Habit Description: ");
 
             Console.WriteLine(
-                "Choose Habit Frequency:\n" +
                 "1.Saturday\n" +
                 "2.Sunday\n" +
                 "3.Monday\n" +
@@ -88,7 +105,7 @@ namespace HabitTracker.UI
                 "8.All Week\n" +
                 "Press 0 When Done Choosing"
             );
-            HabitFrequency = ChooseHabitFrequencyWeekly();
+            GetHabitFrequencyWeekly(ref HabitFrequency, "Choose Your Habit Frequency");
 
             Console.WriteLine();
 
@@ -96,18 +113,6 @@ namespace HabitTracker.UI
 
         }
 
-        public static Habit ChooseHabitIDToDelete()
-        {
-            Console.WriteLine("Choose a Habit by id to delete:");
-            HabitManager.ViewAllHabitsById();
-            int getUserChoiceFromMenu;
-            do
-            {
-                Console.Write("Your Choice: ");
-                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
-            } while (!HabitManager.AllHabits.Contains(HabitManager.AllHabits[getUserChoiceFromMenu - 1]));
-            return HabitManager.AllHabits[getUserChoiceFromMenu - 1];
 
-        }
     }
 }
