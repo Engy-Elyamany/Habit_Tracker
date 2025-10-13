@@ -18,7 +18,7 @@ namespace HabitTracker.Services
         }
         public static void DeleteHabit()
         {
-            System.Console.WriteLine("========= Delete Habit =========");
+            Console.WriteLine("========= Delete Habit =========");
             Habit desiredHabitToDelete = HabitInput.ChooseHabitByID();
             if (AllHabits.Remove(desiredHabitToDelete))
             {
@@ -39,7 +39,7 @@ namespace HabitTracker.Services
         }
         public static void EditHabit()
         {
-            System.Console.WriteLine("========= Edit Habit =========");
+            Console.WriteLine("========= Edit Habit =========");
             Habit desiredHabit = HabitInput.ChooseHabitByID();
             HabitInput.EditHabitUI();
 
@@ -89,15 +89,40 @@ namespace HabitTracker.Services
         }
         public static void ViewAllHabitsById()
         {
-            foreach (var Habit in AllHabits)
+            foreach (var habit in AllHabits)
             {
                 Console.WriteLine(
-                $"Habit Name = {Habit.Name}" +
-                $"\nHabit ID = {Habit.Id}"
-                );
+               $"ID = {habit.Id} : " +
+                $"Name = {habit.Name}");
 
                 Console.WriteLine();
             }
+        }
+
+        public static void ViewHabitDetails(Habit habit)
+        {
+            Console.WriteLine(
+                $"ID = {habit.Id} : " +
+                $"Name = {habit.Name}");
+                Console.WriteLine();
+        }
+        public static void ViewTodayHabits()
+        {
+            DayOfWeek today = DateTime.Today.DayOfWeek;
+            System.Console.WriteLine($"========= {today}'s Habits =========");
+            bool habitExistToday = false;
+            foreach (var habit in AllHabits)
+            {
+                bool isTheHabitToday = Convert.ToBoolean(((int)habit.Frequency >> (int)today) & 1);
+                if (isTheHabitToday)
+                {
+                    habitExistToday = true;
+                    ViewHabitDetails(habit);
+                }
+            }
+            if (!habitExistToday)
+                System.Console.WriteLine("No habits Today");
+
         }
     }
 }
