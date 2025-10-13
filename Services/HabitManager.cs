@@ -9,17 +9,17 @@ namespace HabitTracker.Services
 
         public static readonly List<Habit> AllHabits = new List<Habit>();
         private static int idCounter = 0;
-        public static Habit CreateHabit()
+        public static void CreateHabit()
         {
             idCounter++;
-            Habit newHabit = HabitInput.ReadInputFromUser();
+            Habit newHabit = HabitInput.ReadHabitFromUser();
             newHabit.Id = idCounter;
             AllHabits.Add(newHabit);
-            return newHabit;
         }
         public static void DeleteHabit()
         {
-            Habit desiredHabitToDelete = HabitInput.ChooseHabitIDToDelete();
+            System.Console.WriteLine("========= Delete Habit =========");
+            Habit desiredHabitToDelete = HabitInput.ChooseHabitByID();
             if (AllHabits.Remove(desiredHabitToDelete))
             {
                 idCounter--;
@@ -32,10 +32,48 @@ namespace HabitTracker.Services
 
             //sync all IDs with the new order after deletion
             //TODO : Could be improved a bit more 
-            for (int i = 0; i<AllHabits.Count; i++)
+            for (int i = 0; i < AllHabits.Count; i++)
             {
                 AllHabits[i].Id = i + 1;
             }
+        }
+        public static void EditHabit()
+        {
+            System.Console.WriteLine("========= Edit Habit =========");
+            Habit desiredHabit = HabitInput.ChooseHabitByID();
+            HabitInput.EditHabitUI();
+
+
+            int userChoice = 1;
+            string? newHabitName = " new Name";
+            string? newHabitDescription = " new desc";
+            Habit.Day newHabitFrequency = 0;
+
+            while (userChoice != 0)
+            {
+                if (!InputValidator.GetValidUserChoiceFromMenu(ref userChoice, "Your Choice to edit", 0, 3))
+                    continue;
+                switch (userChoice)
+                {
+                    case 1:
+                        HabitInput.GetValidString(ref newHabitName, "Enter The new Habit Name: ");
+                        desiredHabit.Name = newHabitName;
+                        break;
+                    case 2:
+                        HabitInput.GetValidString(ref newHabitDescription, "Enter The new Habit Description: ");
+                        desiredHabit.Description = newHabitDescription;
+                        break;
+                    case 3:
+                        HabitInput.GetHabitFrequencyWeekly(ref newHabitFrequency, "Enter The new Habit Frequency");
+                        desiredHabit.Frequency = newHabitFrequency;
+                        break;
+
+                    default:
+                        userChoice = 0;
+                        break;
+                }
+            }
+
         }
         public static void ViewAllHabits()
         {
@@ -57,7 +95,7 @@ namespace HabitTracker.Services
                 $"Habit Name = {Habit.Name}" +
                 $"\nHabit ID = {Habit.Id}"
                 );
-              
+
                 Console.WriteLine();
             }
         }
