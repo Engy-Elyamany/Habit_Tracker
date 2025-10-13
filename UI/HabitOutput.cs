@@ -6,7 +6,7 @@ namespace HabitTracker.UI
 {
     class HabitOutput
     {
-               public static void ViewAllHabits()
+        public static void ViewAllHabits()
         {
             foreach (var Habit in HabitManager.AllHabits)
             {
@@ -16,8 +16,7 @@ namespace HabitTracker.UI
                 $"\nHabit Name = {Habit.Name}" +
                 $"\nHabit Description = {Habit.Description}" +
                 $"\nHabit Frequency = {Habit.Frequency}" +
-                $"\nHabit Status = {habitStatusString}");
-                Console.WriteLine();
+                $"\nHabit Status = {habitStatusString}\n");
             }
         }
         private static void ViewHabitsID(Habit habit)
@@ -25,7 +24,7 @@ namespace HabitTracker.UI
             string habitStatusString = habit.MarkedAsDone ? "Done" : "Not Done";
             Console.WriteLine(
                 $"ID = {habit.Id} , " +
-                $"Name = {habit.Name} , "+
+                $"Name = {habit.Name} , " +
                 $"Status = {habitStatusString}\n"
                 );
         }
@@ -47,6 +46,6 @@ namespace HabitTracker.UI
                 Console.WriteLine("No habits Today");
 
         }
-    
+
     }
 }

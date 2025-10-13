@@ -1,0 +1,23 @@
+[
+  {
+    "Id": 1,
+    "Name": "code",
+    "Description": "coding",
+    "Frequency": 74,
+    "MarkedAsDone": false
+  },
+  {
+    "Id": 2,
+    "Name": "Solving problem",
+    "Description": "at least one problem a day",
+    "Frequency": 127,
+    "MarkedAsDone": true
+  },
+  {
+    "Id": 3,
+    "Name": "learn chess",
+    "Description": "learn one video a day at chess.com",
+    "Frequency": 3,
+    "MarkedAsDone": false
+  }
+]

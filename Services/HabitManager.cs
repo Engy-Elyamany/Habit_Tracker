@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HabitTracker.Models;
 using HabitTracker.UI;
 using HabitTracker.Utilities;
@@ -7,14 +8,21 @@ namespace HabitTracker.Services
     class HabitManager
     {
 
-        public static readonly List<Habit> AllHabits = new List<Habit>();
+        private const string JsonFilePath = "AllHabits.json";
+        public static List<Habit> AllHabits = new List<Habit>();
         private static int idCounter = 0;
+
+        public HabitManager()
+        {
+            AllHabits = LoadHabitsFromJSON();
+        }
         public static void CreateHabit()
         {
             idCounter++;
             Habit newHabit = HabitInput.ReadHabitFromUser();
             newHabit.Id = idCounter;
             AllHabits.Add(newHabit);
+            SaveHabitToJSON();
         }
         public static void DeleteHabit()
         {
@@ -36,6 +44,7 @@ namespace HabitTracker.Services
             {
                 AllHabits[i].Id = i + 1;
             }
+            SaveHabitToJSON();
         }
         public static void EditHabit()
         {
@@ -73,7 +82,7 @@ namespace HabitTracker.Services
                         break;
                 }
             }
-
+            SaveHabitToJSON();
         }
         public static void MarkHabitAsDone()
         {
@@ -103,5 +112,37 @@ namespace HabitTracker.Services
             else
                 Console.WriteLine("Habit is already not marked");
         }
+
+        // save all habits in the list to a JSON file
+        public static void SaveHabitToJSON()
+        {
+            //convet c# object to json
+            string JsonString = JsonSerializer.Serialize(AllHabits, new JsonSerializerOptions { WriteIndented = true });
+
+            //Write to Json file
+            File.WriteAllText(JsonFilePath, JsonString);
+        }
+
+        public static List<Habit> LoadHabitsFromJSON()
+        {
+            //read from Json file
+            string JsonString = File.ReadAllText(JsonFilePath);
+
+            //Convert to C# object
+            List<Habit>? habits = JsonSerializer.Deserialize<List<Habit>>(JsonString);
+
+            //finally, return the list of habits
+            //or in case of an empty json file return an empty list
+            return habits ?? new List<Habit>();
+        }
+
+
+
+
+
+
+
+
+
     }
 }

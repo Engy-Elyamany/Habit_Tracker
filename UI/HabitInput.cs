@@ -65,7 +65,6 @@ namespace HabitTracker.UI
         public static Habit ChooseHabitByID()
         {
             Console.WriteLine("Choose a Habit by id:");
-            HabitManager.ViewAllHabitsById();
             int getUserChoiceFromMenu;
             do
             {
@@ -77,7 +76,7 @@ namespace HabitTracker.UI
         }
         public static void EditHabitUI()
         {
-            System.Console.WriteLine(
+            Console.WriteLine(
                 $"1.Edit Habit Name" +
                 $"\n2.Edit Habit Description" +
                 $"\n3.Edit Habit Frequency" +

@@ -5,12 +5,17 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        
-        HabitManager.CreateHabit();
-        HabitManager.CreateHabit();
-        HabitManager.CreateHabit();
-        HabitManager.ViewAllHabits();
-        HabitManager.DeleteHabit();
-        HabitManager.ViewAllHabits();
+
+        // HabitManager.CreateHabit();
+        // HabitManager.CreateHabit();
+        // HabitManager.CreateHabit();
+        // HabitOutput.ViewAllHabits();
+        // HabitManager.DeleteHabit();
+        var manager = new HabitManager();
+        HabitOutput.ViewAllHabits();
+
+        // HabitManager.ViewAllHabits();
+        // HabitManager.EditHabit();
+        // HabitManager.ViewAllHabits();
     }
 }
