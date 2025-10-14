@@ -1,5 +1,3 @@
-using HabitTracker.Services;
-
 namespace HabitTracker.Models
 {
     class Habit
@@ -12,7 +10,8 @@ namespace HabitTracker.Models
 
         public Habit()
         {
-            
+            Name = "Default Name";
+            Description = "Default Description";
         }
         public Habit(string habitName, string habitDescription, Day habitFrequency, int habitId = 0, bool habitStatus = false)
         {

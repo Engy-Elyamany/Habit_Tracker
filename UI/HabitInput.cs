@@ -1,5 +1,4 @@
 using HabitTracker.Models;
-using HabitTracker.Services;
 using HabitTracker.Utilities;
 
 namespace HabitTracker.UI
@@ -74,16 +73,6 @@ namespace HabitTracker.UI
                 }
                 HabitFrequency |= choosenFreqDay;
             }
-        }
-        public static void EditHabitUI()
-        {
-            Console.WriteLine(
-                $"1.Edit Habit Name" +
-                $"\n2.Edit Habit Description" +
-                $"\n3.Edit Habit Frequency" +
-                $"\nTo Exit press 0"
-            );
-
         }
         public static Habit ReadHabitFromUser()
         {

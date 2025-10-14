@@ -1,6 +1,4 @@
 using HabitTracker.Models;
-using HabitTracker.Services;
-using HabitTracker.Utilities;
 
 namespace HabitTracker.UI
 {
