@@ -72,17 +72,20 @@ namespace HabitTracker
 
         private Habit ChooseHabitByID()
         {
-            Console.WriteLine("Choose a Habit by id:");
             int getUserChoiceFromMenu;
             Habit desiredHabit = new();
-            getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
-
-            if (!manager.HabitExistinList(getUserChoiceFromMenu, ref desiredHabit))
+            while (true)
             {
-                Console.WriteLine("Invalid ID! The intended habit doesn't exist");
-                ChooseHabitByID();
+                Console.WriteLine("Choose a Habit by id:");
+                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
+                var check = manager.HabitExistinList(getUserChoiceFromMenu, ref desiredHabit);
+                if (check == HabitManager.operationStatus.INVALID_INPUT)
+                {
+                    Console.WriteLine("Invalid ID! The intended habit doesn't exist");
+                    continue;
+                }
+                return desiredHabit;
             }
-            return desiredHabit;
         }
 
         private void CreateHabit()
@@ -108,7 +111,7 @@ namespace HabitTracker
               "\nTo Exit press 0"
            );
 
-            manager.DeleteHabit(desiredHabit);
+            manager.EditHabit(desiredHabit);
         }
         private void MarkHabitAsDone()
         {

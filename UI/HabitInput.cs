@@ -98,7 +98,7 @@ namespace HabitTracker.UI
 
             Console.WriteLine();
 
-            return new Habit(InputName, InputDescription, HabitFrequency);
+            return new Habit(InputName, InputDescription, HabitFrequency) ?? null;
 
         }
 

@@ -11,26 +11,49 @@ namespace HabitTracker.Services
         public List<Habit> AllHabits = new List<Habit>();
         private static int idCounter = 0;
 
+        public enum operationStatus
+        {
+            SUCCESS,
+            FAILURE,
+            VALID,
+            INVALID_INPUT,
+            NULL_VALUE
+        }
         public HabitManager()
         {
+            //Load Habits from Json file to AllHabit List
             AllHabits = LoadHabitsFromJSON();
-        }
-        public bool HabitExistinList(int userIdChoice, ref Habit habit)
-        {
-            if (AllHabits.Contains(AllHabits[userIdChoice - 1]))
-            {
-                habit = AllHabits[userIdChoice - 1];
-                return true;
-            }
 
-            return false;
+            //Update idCounter to the last id in Json file
+            idCounter = AllHabits.Count;
+
         }
-        public void CreateHabit(Habit newHabit)
+
+        //function : check if the given ID exists in Habit list or not
+        //inputs   : User's choosen id
+        //return   : Operation status
+        public operationStatus HabitExistinList(int userIdChoice, ref Habit habit)
         {
+            if (userIdChoice < 1 || userIdChoice > AllHabits.Count)
+            {
+                return operationStatus.INVALID_INPUT;
+            }
+            habit = AllHabits[userIdChoice - 1];
+            return operationStatus.VALID;
+        }
+
+        //function : ceates a habit, add it to list, save to json
+        //inputs   : the new habit data
+        //return   :
+        public operationStatus CreateHabit(Habit newHabit)
+        {
+            if (newHabit == null)
+                return operationStatus.NULL_VALUE;
             idCounter++;
             newHabit.Id = idCounter;
             AllHabits.Add(newHabit);
             SaveHabitToJSON(AllHabits);
+            return operationStatus.NULL_VALUE;
         }
         public void DeleteHabit(Habit desiredHabit)
         {
@@ -108,7 +131,7 @@ namespace HabitTracker.Services
                 Console.WriteLine("Habit is already not marked");
         }
 
-        public void ClearList(List<Habit>AllHabits)
+        public void ClearList(List<Habit> AllHabits)
         {
             AllHabits.Clear();
             SaveHabitToJSON(AllHabits);
