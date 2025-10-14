@@ -6,6 +6,19 @@ namespace HabitTracker.UI
 {
     class HabitInput
     {
+
+        public static bool GetValidUserChoiceFromMenu(ref int Choice, string printStatement, int validationRangeStart, int validationRangeEnd)
+        {
+            bool validChoice = true;
+            Console.Write(printStatement + ": ");
+            Choice = Convert.ToInt32(Console.ReadLine());
+            if (Choice > validationRangeEnd || Choice < validationRangeStart)
+            {
+                Console.WriteLine("Invalid Input, Please choose from menu ");
+                validChoice = false;
+            }
+            return validChoice;
+        }
         public static void GetValidString(ref string? str, string printStatement)
         {
             do
@@ -27,7 +40,7 @@ namespace HabitTracker.UI
 
             while (userChoice != 0)
             {
-                if (!InputValidator.GetValidUserChoiceFromMenu(ref userChoice, "Your Day Choice", 0, 8))
+                if (!GetValidUserChoiceFromMenu(ref userChoice, "Your Day Choice", 0, 8))
                     continue;
                 switch (userChoice)
                 {
@@ -61,18 +74,6 @@ namespace HabitTracker.UI
                 }
                 HabitFrequency |= choosenFreqDay;
             }
-        }
-        public static Habit ChooseHabitByID()
-        {
-            Console.WriteLine("Choose a Habit by id:");
-            int getUserChoiceFromMenu;
-            do
-            {
-                Console.Write("Your Id Choice: ");
-                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
-            } while (!HabitManager.AllHabits.Contains(HabitManager.AllHabits[getUserChoiceFromMenu - 1]));
-            return HabitManager.AllHabits[getUserChoiceFromMenu - 1];
-
         }
         public static void EditHabitUI()
         {

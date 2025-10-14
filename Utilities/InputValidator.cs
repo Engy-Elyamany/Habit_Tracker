@@ -21,17 +21,6 @@ namespace HabitTracker.Utilities
             }
             return false;
         }
-        public static bool GetValidUserChoiceFromMenu(ref int Choice, string printStatement, int validationRangeStart, int validationRangeEnd)
-        {
-            bool validChoice = true;
-            Console.Write(printStatement + ": ");
-            Choice = Convert.ToInt32(Console.ReadLine());
-            if (Choice > validationRangeEnd || Choice < validationRangeStart)
-            {
-                Console.WriteLine("Invalid Input, Please choose from menu ");
-                validChoice = false;
-            }
-            return validChoice;
-        }
+       
     }
 }

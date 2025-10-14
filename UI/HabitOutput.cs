@@ -6,9 +6,9 @@ namespace HabitTracker.UI
 {
     class HabitOutput
     {
-        public static void ViewAllHabits()
+        public static void ViewAllHabits(List<Habit>AllHabits)
         {
-            foreach (var Habit in HabitManager.AllHabits)
+            foreach (var Habit in AllHabits)
             {
                 string habitStatusString = Habit.MarkedAsDone ? "Done" : "Not Done";
                 Console.WriteLine(
@@ -28,12 +28,12 @@ namespace HabitTracker.UI
                 $"Status = {habitStatusString}\n"
                 );
         }
-        public static void ViewTodayHabits()
+        public static void ViewTodayHabits(List<Habit>AllHabits)
         {
             DayOfWeek today = DateTime.Today.DayOfWeek;
             Console.WriteLine($"========= {today}'s Habits =========");
             bool habitExistToday = false;
-            foreach (var habit in HabitManager.AllHabits)
+            foreach (var habit in AllHabits)
             {
                 bool isTheHabitToday = Convert.ToBoolean(((int)habit.Frequency >> (int)today) & 1);
                 if (isTheHabitToday)

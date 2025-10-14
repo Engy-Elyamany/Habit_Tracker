@@ -9,26 +9,35 @@ namespace HabitTracker.Services
     {
 
         private const string JsonFilePath = "AllHabits.json";
-        public static List<Habit> AllHabits = new List<Habit>();
+        public List<Habit> AllHabits = new List<Habit>();
         private static int idCounter = 0;
 
         public HabitManager()
         {
             AllHabits = LoadHabitsFromJSON();
         }
-        public static void CreateHabit()
+         public Habit ChooseHabitByID()
+        {
+            Console.WriteLine("Choose a Habit by id:");
+            int getUserChoiceFromMenu;
+            do
+            {
+                Console.Write("Your Id Choice: ");
+                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
+            } while (!AllHabits.Contains(AllHabits[getUserChoiceFromMenu - 1]));
+            return AllHabits[getUserChoiceFromMenu - 1];
+
+        }
+        public void CreateHabit(Habit newHabit)
         {
             idCounter++;
-            Habit newHabit = HabitInput.ReadHabitFromUser();
             newHabit.Id = idCounter;
             AllHabits.Add(newHabit);
-            SaveHabitToJSON();
+            SaveHabitToJSON(AllHabits);
         }
-        public static void DeleteHabit()
+        public void DeleteHabit(Habit desiredHabit)
         {
-            Console.WriteLine("========= Delete Habit =========");
-            Habit desiredHabitToDelete = HabitInput.ChooseHabitByID();
-            if (AllHabits.Remove(desiredHabitToDelete))
+            if (AllHabits.Remove(desiredHabit))
             {
                 idCounter--;
                 Console.WriteLine("Habit Removed Successfully");
@@ -44,15 +53,10 @@ namespace HabitTracker.Services
             {
                 AllHabits[i].Id = i + 1;
             }
-            SaveHabitToJSON();
+            SaveHabitToJSON(AllHabits);
         }
-        public static void EditHabit()
+        public void EditHabit(Habit desiredHabit)
         {
-            Console.WriteLine("========= Edit Habit =========");
-            Habit desiredHabit = HabitInput.ChooseHabitByID();
-            HabitInput.EditHabitUI();
-
-
             int userChoice = 1;
             string? newHabitName = " new Name";
             string? newHabitDescription = " new desc";
@@ -60,7 +64,7 @@ namespace HabitTracker.Services
 
             while (userChoice != 0)
             {
-                if (!InputValidator.GetValidUserChoiceFromMenu(ref userChoice, "Your Choice to edit", 0, 3))
+                if (!HabitInput.GetValidUserChoiceFromMenu(ref userChoice, "Your Choice to edit", 0, 3))
                     continue;
                 switch (userChoice)
                 {
@@ -82,13 +86,10 @@ namespace HabitTracker.Services
                         break;
                 }
             }
-            SaveHabitToJSON();
+            SaveHabitToJSON(AllHabits);
         }
-        public static void MarkHabitAsDone()
+        public void MarkHabitAsDone(Habit desiredHabit)
         {
-            Console.WriteLine("========= Mark Habits =========");
-            HabitOutput.ViewTodayHabits();
-            Habit desiredHabit = HabitInput.ChooseHabitByID();
             if (!desiredHabit.MarkedAsDone)
             {
                 desiredHabit.MarkedAsDone = true;
@@ -98,11 +99,8 @@ namespace HabitTracker.Services
             else
                 Console.WriteLine("Habit already completed for today");
         }
-        public static void UndoMarkedHabit()
+        public void UndoMarkedHabit(Habit desiredHabit)
         {
-            Console.WriteLine("========= Undo compeletion =========");
-            HabitOutput.ViewAllHabits();
-            Habit desiredHabit = HabitInput.ChooseHabitByID();
             if (desiredHabit.MarkedAsDone)
             {
                 desiredHabit.MarkedAsDone = false;
@@ -114,7 +112,7 @@ namespace HabitTracker.Services
         }
 
         // save all habits in the list to a JSON file
-        public static void SaveHabitToJSON()
+        public static void SaveHabitToJSON(List<Habit>AllHabits)
         {
             //convet c# object to json
             string JsonString = JsonSerializer.Serialize(AllHabits, new JsonSerializerOptions { WriteIndented = true });
@@ -135,13 +133,6 @@ namespace HabitTracker.Services
             //or in case of an empty json file return an empty list
             return habits ?? new List<Habit>();
         }
-
-
-
-
-
-
-
 
 
     }
