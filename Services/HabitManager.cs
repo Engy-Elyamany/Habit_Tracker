@@ -1,7 +1,6 @@
 using System.Text.Json;
 using HabitTracker.Models;
 using HabitTracker.UI;
-using HabitTracker.Utilities;
 
 namespace HabitTracker.Services
 {
@@ -16,17 +15,15 @@ namespace HabitTracker.Services
         {
             AllHabits = LoadHabitsFromJSON();
         }
-         public Habit ChooseHabitByID()
+        public bool HabitExistinList(int userIdChoice, ref Habit habit)
         {
-            Console.WriteLine("Choose a Habit by id:");
-            int getUserChoiceFromMenu;
-            do
+            if (AllHabits.Contains(AllHabits[userIdChoice - 1]))
             {
-                Console.Write("Your Id Choice: ");
-                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
-            } while (!AllHabits.Contains(AllHabits[getUserChoiceFromMenu - 1]));
-            return AllHabits[getUserChoiceFromMenu - 1];
+                habit = AllHabits[userIdChoice - 1];
+                return true;
+            }
 
+            return false;
         }
         public void CreateHabit(Habit newHabit)
         {
@@ -111,8 +108,14 @@ namespace HabitTracker.Services
                 Console.WriteLine("Habit is already not marked");
         }
 
+        public void ClearList(List<Habit>AllHabits)
+        {
+            AllHabits.Clear();
+            SaveHabitToJSON(AllHabits);
+        }
+
         // save all habits in the list to a JSON file
-        public static void SaveHabitToJSON(List<Habit>AllHabits)
+        private void SaveHabitToJSON(List<Habit> AllHabits)
         {
             //convet c# object to json
             string JsonString = JsonSerializer.Serialize(AllHabits, new JsonSerializerOptions { WriteIndented = true });
@@ -121,7 +124,7 @@ namespace HabitTracker.Services
             File.WriteAllText(JsonFilePath, JsonString);
         }
 
-        public static List<Habit> LoadHabitsFromJSON()
+        private List<Habit> LoadHabitsFromJSON()
         {
             //read from Json file
             string JsonString = File.ReadAllText(JsonFilePath);
