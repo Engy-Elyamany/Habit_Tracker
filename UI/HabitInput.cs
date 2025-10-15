@@ -9,7 +9,11 @@ namespace HabitTracker.UI
         public static bool GetValidUserChoiceFromMenu(ref int Choice, string printStatement, int validationRangeStart, int validationRangeEnd)
         {
             bool validChoice = true;
-            Console.Write(printStatement + ": ");
+            
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(printStatement + ": ");
+            Console.ResetColor();
+
             Choice = Convert.ToInt32(Console.ReadLine());
             if (Choice > validationRangeEnd || Choice < validationRangeStart)
             {
@@ -22,7 +26,7 @@ namespace HabitTracker.UI
         {
             do
             {
-                Console.Write(printStatement);
+                Console.Write(printStatement + ": ");
                 str = Console.ReadLine();
                 if (InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str))
                 {
@@ -32,10 +36,11 @@ namespace HabitTracker.UI
         }
         public static void GetHabitFrequencyWeekly(ref Habit.Day HabitFrequency, string printStatement)
         {
-            Console.WriteLine(printStatement);
-            //Habit.Day HabitFrequency = 0;
+            Console.WriteLine(printStatement + "\n");
             Habit.Day choosenFreqDay = 0;
             int userChoice = 1;
+
+            HabitOutput.PrintDaysMenu();
 
             while (userChoice != 0)
             {
@@ -74,7 +79,7 @@ namespace HabitTracker.UI
                 HabitFrequency |= choosenFreqDay;
             }
         }
-        public static Habit ReadHabitFromUser()
+        public static Habit? ReadHabitFromUser()
         {
             string? InputName = "Default Habit Name";
             string? InputDescription = "Default Habit Description";
@@ -82,18 +87,6 @@ namespace HabitTracker.UI
 
             GetValidString(ref InputName, "Enter Habit Name: ");
             GetValidString(ref InputDescription, "Enter Habit Description: ");
-
-            Console.WriteLine(
-                "1.Saturday\n" +
-                "2.Sunday\n" +
-                "3.Monday\n" +
-                "4.Tuesday\n" +
-                "5.Wednesday\n" +
-                "6.Thursday\n" +
-                "7.Friday\n" +
-                "8.All Week\n" +
-                "Press 0 When Done Choosing"
-            );
             GetHabitFrequencyWeekly(ref HabitFrequency, "Choose Your Habit Frequency");
 
             Console.WriteLine();

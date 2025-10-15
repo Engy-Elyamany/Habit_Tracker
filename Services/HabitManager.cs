@@ -29,9 +29,6 @@ namespace HabitTracker.Services
 
         }
 
-        //function : check if the given ID exists in Habit list or not
-        //inputs   : User's choosen id
-        //return   : Operation status
         public operationStatus HabitExistinList(int userIdChoice, ref Habit habit)
         {
             if (userIdChoice < 1 || userIdChoice > AllHabits.Count)
@@ -41,11 +38,7 @@ namespace HabitTracker.Services
             habit = AllHabits[userIdChoice - 1];
             return operationStatus.VALID;
         }
-
-        //function : ceates a habit, add it to list, save to json
-        //inputs   : the new habit data
-        //return   :
-        public operationStatus CreateHabit(Habit newHabit)
+        public operationStatus CreateHabit(Habit ?newHabit)
         {
             if (newHabit == null)
                 return operationStatus.NULL_VALUE;
@@ -53,29 +46,30 @@ namespace HabitTracker.Services
             newHabit.Id = idCounter;
             AllHabits.Add(newHabit);
             SaveHabitToJSON(AllHabits);
-            return operationStatus.NULL_VALUE;
+            return operationStatus.SUCCESS;
         }
-        public void DeleteHabit(Habit desiredHabit)
+
+            public operationStatus DeleteHabit(Habit desiredHabit)
         {
             if (AllHabits.Remove(desiredHabit))
             {
                 idCounter--;
-                Console.WriteLine("Habit Removed Successfully");
+                //sync all IDs with the new order after deletion
+                for (int i = 0; i < AllHabits.Count; i++)
+                {
+                    AllHabits[i].Id = i + 1;
+                }
+                SaveHabitToJSON(AllHabits);
+                return operationStatus.SUCCESS;
             }
             else
             {
-                Console.WriteLine("Couldn't Remove This Habit,Please Try again");
+                return operationStatus.FAILURE;
             }
 
-            //sync all IDs with the new order after deletion
-            //TODO : Could be improved a bit more 
-            for (int i = 0; i < AllHabits.Count; i++)
-            {
-                AllHabits[i].Id = i + 1;
-            }
-            SaveHabitToJSON(AllHabits);
+
         }
-        public void EditHabit(Habit desiredHabit)
+        public operationStatus EditHabit(Habit desiredHabit)
         {
             int userChoice = 1;
             string? newHabitName = " new Name";
@@ -85,15 +79,18 @@ namespace HabitTracker.Services
             while (userChoice != 0)
             {
                 if (!HabitInput.GetValidUserChoiceFromMenu(ref userChoice, "Your Choice to edit", 0, 3))
+                {
                     continue;
+                }
+
                 switch (userChoice)
                 {
                     case 1:
-                        HabitInput.GetValidString(ref newHabitName, "Enter The new Habit Name: ");
+                        HabitInput.GetValidString(ref newHabitName, "Enter The new Habit Name");
                         desiredHabit.Name = newHabitName;
                         break;
                     case 2:
-                        HabitInput.GetValidString(ref newHabitDescription, "Enter The new Habit Description: ");
+                        HabitInput.GetValidString(ref newHabitDescription, "Enter The new Habit Description");
                         desiredHabit.Description = newHabitDescription;
                         break;
                     case 3:
@@ -107,28 +104,37 @@ namespace HabitTracker.Services
                 }
             }
             SaveHabitToJSON(AllHabits);
+            return operationStatus.SUCCESS;
         }
-        public void MarkHabitAsDone(Habit desiredHabit)
+        public static operationStatus MarkHabitAsDone(Habit desiredHabit)
         {
+            operationStatus status;
             if (!desiredHabit.MarkedAsDone)
             {
                 desiredHabit.MarkedAsDone = true;
-                Console.WriteLine($"Habit No.{desiredHabit.Id} completed successfuly");
+                status = operationStatus.SUCCESS;
             }
 
             else
-                Console.WriteLine("Habit already completed for today");
+            {
+                status = operationStatus.FAILURE;
+            }
+
+            return status;
+
         }
-        public void UndoMarkedHabit(Habit desiredHabit)
+        public static operationStatus UndoMarkedHabit(Habit desiredHabit)
         {
+            operationStatus status;
             if (desiredHabit.MarkedAsDone)
             {
                 desiredHabit.MarkedAsDone = false;
-                Console.WriteLine("Compeletion Undone");
+                status = operationStatus.SUCCESS;
             }
 
             else
-                Console.WriteLine("Habit is already not marked");
+                status = operationStatus.FAILURE;
+            return status;
         }
 
         public void ClearList(List<Habit> AllHabits)
@@ -138,7 +144,7 @@ namespace HabitTracker.Services
         }
 
         // save all habits in the list to a JSON file
-        private void SaveHabitToJSON(List<Habit> AllHabits)
+        private static void SaveHabitToJSON(List<Habit> AllHabits)
         {
             //convet c# object to json
             string JsonString = JsonSerializer.Serialize(AllHabits, new JsonSerializerOptions { WriteIndented = true });
@@ -147,7 +153,7 @@ namespace HabitTracker.Services
             File.WriteAllText(JsonFilePath, JsonString);
         }
 
-        private List<Habit> LoadHabitsFromJSON()
+        private static List<Habit> LoadHabitsFromJSON()
         {
             //read from Json file
             string JsonString = File.ReadAllText(JsonFilePath);
@@ -160,6 +166,25 @@ namespace HabitTracker.Services
             return habits ?? new List<Habit>();
         }
 
+        public static List<Habit>? TodayHabits(List<Habit> AllHabits)
+        {
+            List<Habit> TodayHabits = new List<Habit>();
+            DayOfWeek today = DateTime.Today.DayOfWeek;
+
+            Console.WriteLine($"========= {today}'s Habits =========");
+
+            foreach (var habit in AllHabits)
+            {
+                bool isTheHabitToday = Convert.ToBoolean(((int)habit.Frequency >> (int)today) & 1);
+                if (isTheHabitToday)
+                {
+                    TodayHabits.Add(habit);
+                }
+            }
+
+            return TodayHabits ?? null;
+
+        }
 
     }
 }

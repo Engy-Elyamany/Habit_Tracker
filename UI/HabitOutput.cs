@@ -1,21 +1,88 @@
+using System.Net.NetworkInformation;
+using ConsoleTables;
 using HabitTracker.Models;
 
 namespace HabitTracker.UI
 {
     class HabitOutput
     {
-        public static void ViewAllHabits(List<Habit>AllHabits)
+        public static void ViewHabits(List<Habit> AllHabits)
         {
+
+            if (AllHabits == null)
+            {
+                Console.WriteLine("Empty List! Nothing to display");
+                return;
+            }
+
+            var table = new ConsoleTable("ID", "Name", "Description", "Frequency", "Status");
             foreach (var Habit in AllHabits)
             {
                 string habitStatusString = Habit.MarkedAsDone ? "Done" : "Not Done";
-                Console.WriteLine(
-                $"Habit ID = {Habit.Id}" +
-                $"\nHabit Name = {Habit.Name}" +
-                $"\nHabit Description = {Habit.Description}" +
-                $"\nHabit Frequency = {Habit.Frequency}" +
-                $"\nHabit Status = {habitStatusString}\n");
+
+                //add each habit to the table
+                table.AddRow(Habit.Id, Habit.Name, Habit.Description, Habit.Frequency, habitStatusString);
             }
+            //display the table
+
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            table.Write(Format.Alternative);
+            Console.ResetColor();
+        }
+
+        public static void PrintMainMenu()
+        {
+            Console.WriteLine(
+            "\n" +
+            "Main Menu" +
+            "\n1.Add Habit" +
+            "\n2.View All Habits" +
+            "\n3.View Today's Habits" +
+            "\n4.Mark Habits as Done" +
+            "\n5.Undo a habit completion" +
+            "\n6.Edit Habit" +
+            "\n7.Delete Habit" +
+            "\n8.Destroy Habit list");
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine(
+            "\nTo Exit press 0" +
+            "\n");
+            Console.ResetColor();
+
+        }
+
+        public static void PrintEditMenu()
+        {
+            Console.WriteLine(
+             "1.Edit Habit Name" +
+             "\n2.Edit Habit Description" +
+             "\n3.Edit Habit Frequency");
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine(
+            "\nTo Exit press 0" +
+            "\n");
+            Console.ResetColor();
+        }
+
+        public static void PrintDaysMenu()
+        {
+            Console.WriteLine(
+                "1.Saturday\n" +
+                "2.Sunday\n" +
+                "3.Monday\n" +
+                "4.Tuesday\n" +
+                "5.Wednesday\n" +
+                "6.Thursday\n" +
+                "7.Friday\n" +
+                "8.All Week\n");
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine(
+            "\nTo Exit press 0" +
+            "\n");
+            Console.ResetColor();
         }
         private static void ViewHabitsID(Habit habit)
         {
@@ -26,24 +93,7 @@ namespace HabitTracker.UI
                 $"Status = {habitStatusString}\n"
                 );
         }
-        public static void ViewTodayHabits(List<Habit>AllHabits)
-        {
-            DayOfWeek today = DateTime.Today.DayOfWeek;
-            Console.WriteLine($"========= {today}'s Habits =========");
-            bool habitExistToday = false;
-            foreach (var habit in AllHabits)
-            {
-                bool isTheHabitToday = Convert.ToBoolean(((int)habit.Frequency >> (int)today) & 1);
-                if (isTheHabitToday)
-                {
-                    habitExistToday = true;
-                    ViewHabitsID(habit);
-                }
-            }
-            if (!habitExistToday)
-                Console.WriteLine("No habits Today");
 
-        }
 
     }
 }
