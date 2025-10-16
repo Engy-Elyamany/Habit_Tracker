@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using ConsoleTables;
 using HabitTracker.Models;
 
@@ -29,7 +28,6 @@ namespace HabitTracker.UI
             table.Write(Format.Alternative);
             Console.ResetColor();
         }
-
         public static void PrintMainMenu()
         {
             Console.WriteLine(
@@ -45,13 +43,12 @@ namespace HabitTracker.UI
             "\n8.Destroy Habit list");
 
             Console.ForegroundColor = ConsoleColor.Red;
-            System.Console.WriteLine(
+            Console.WriteLine(
             "\nTo Exit press 0" +
             "\n");
             Console.ResetColor();
 
         }
-
         public static void PrintEditMenu()
         {
             Console.WriteLine(
@@ -60,13 +57,12 @@ namespace HabitTracker.UI
              "\n3.Edit Habit Frequency");
 
             Console.ForegroundColor = ConsoleColor.Red;
-            System.Console.WriteLine(
+            Console.WriteLine(
             "\nTo Exit press 0" +
             "\n");
             Console.ResetColor();
         }
-
-        public static void PrintDaysMenu()
+       public static void PrintDaysMenu()
         {
             Console.WriteLine(
                 "1.Saturday\n" +
@@ -79,7 +75,7 @@ namespace HabitTracker.UI
                 "8.All Week\n");
 
             Console.ForegroundColor = ConsoleColor.Red;
-            System.Console.WriteLine(
+            Console.WriteLine(
             "\nTo Exit press 0" +
             "\n");
             Console.ResetColor();

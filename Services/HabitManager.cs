@@ -1,6 +1,5 @@
 using System.Text.Json;
 using HabitTracker.Models;
-using HabitTracker.UI;
 
 namespace HabitTracker.Services
 {
@@ -10,10 +9,9 @@ namespace HabitTracker.Services
         private const string JsonFilePath = "AllHabits.json";
         public List<Habit> AllHabits = new List<Habit>();
         private static int idCounter = 0;
-
-        public enum operationStatus
+        public enum OperationStatus
         {
-            SUCCESS,
+            SUCCESS = -5,
             FAILURE,
             VALID,
             INVALID_INPUT,
@@ -28,150 +26,18 @@ namespace HabitTracker.Services
             idCounter = AllHabits.Count;
 
         }
-
-        public operationStatus HabitExistinList(int userIdChoice, ref Habit habit)
+        public OperationStatus HabitExistinList(int userIdChoice)
         {
             if (userIdChoice < 1 || userIdChoice > AllHabits.Count)
             {
-                return operationStatus.INVALID_INPUT;
+                return OperationStatus.INVALID_INPUT;
             }
-            habit = AllHabits[userIdChoice - 1];
-            return operationStatus.VALID;
+            return OperationStatus.VALID;
         }
-        public operationStatus CreateHabit(Habit ?newHabit)
-        {
-            if (newHabit == null)
-                return operationStatus.NULL_VALUE;
-            idCounter++;
-            newHabit.Id = idCounter;
-            AllHabits.Add(newHabit);
-            SaveHabitToJSON(AllHabits);
-            return operationStatus.SUCCESS;
-        }
-
-            public operationStatus DeleteHabit(Habit desiredHabit)
-        {
-            if (AllHabits.Remove(desiredHabit))
-            {
-                idCounter--;
-                //sync all IDs with the new order after deletion
-                for (int i = 0; i < AllHabits.Count; i++)
-                {
-                    AllHabits[i].Id = i + 1;
-                }
-                SaveHabitToJSON(AllHabits);
-                return operationStatus.SUCCESS;
-            }
-            else
-            {
-                return operationStatus.FAILURE;
-            }
-
-
-        }
-        public operationStatus EditHabit(Habit desiredHabit)
-        {
-            int userChoice = 1;
-            string? newHabitName = " new Name";
-            string? newHabitDescription = " new desc";
-            Habit.Day newHabitFrequency = 0;
-
-            while (userChoice != 0)
-            {
-                if (!HabitInput.GetValidUserChoiceFromMenu(ref userChoice, "Your Choice to edit", 0, 3))
-                {
-                    continue;
-                }
-
-                switch (userChoice)
-                {
-                    case 1:
-                        HabitInput.GetValidString(ref newHabitName, "Enter The new Habit Name");
-                        desiredHabit.Name = newHabitName;
-                        break;
-                    case 2:
-                        HabitInput.GetValidString(ref newHabitDescription, "Enter The new Habit Description");
-                        desiredHabit.Description = newHabitDescription;
-                        break;
-                    case 3:
-                        HabitInput.GetHabitFrequencyWeekly(ref newHabitFrequency, "Enter The new Habit Frequency");
-                        desiredHabit.Frequency = newHabitFrequency;
-                        break;
-
-                    default:
-                        userChoice = 0;
-                        break;
-                }
-            }
-            SaveHabitToJSON(AllHabits);
-            return operationStatus.SUCCESS;
-        }
-        public static operationStatus MarkHabitAsDone(Habit desiredHabit)
-        {
-            operationStatus status;
-            if (!desiredHabit.MarkedAsDone)
-            {
-                desiredHabit.MarkedAsDone = true;
-                status = operationStatus.SUCCESS;
-            }
-
-            else
-            {
-                status = operationStatus.FAILURE;
-            }
-
-            return status;
-
-        }
-        public static operationStatus UndoMarkedHabit(Habit desiredHabit)
-        {
-            operationStatus status;
-            if (desiredHabit.MarkedAsDone)
-            {
-                desiredHabit.MarkedAsDone = false;
-                status = operationStatus.SUCCESS;
-            }
-
-            else
-                status = operationStatus.FAILURE;
-            return status;
-        }
-
-        public void ClearList(List<Habit> AllHabits)
-        {
-            AllHabits.Clear();
-            SaveHabitToJSON(AllHabits);
-        }
-
-        // save all habits in the list to a JSON file
-        private static void SaveHabitToJSON(List<Habit> AllHabits)
-        {
-            //convet c# object to json
-            string JsonString = JsonSerializer.Serialize(AllHabits, new JsonSerializerOptions { WriteIndented = true });
-
-            //Write to Json file
-            File.WriteAllText(JsonFilePath, JsonString);
-        }
-
-        private static List<Habit> LoadHabitsFromJSON()
-        {
-            //read from Json file
-            string JsonString = File.ReadAllText(JsonFilePath);
-
-            //Convert to C# object
-            List<Habit>? habits = JsonSerializer.Deserialize<List<Habit>>(JsonString);
-
-            //finally, return the list of habits
-            //or in case of an empty json file return an empty list
-            return habits ?? new List<Habit>();
-        }
-
-        public static List<Habit>? TodayHabits(List<Habit> AllHabits)
+        public List<Habit> TodayHabits(List<Habit> AllHabits)
         {
             List<Habit> TodayHabits = new List<Habit>();
             DayOfWeek today = DateTime.Today.DayOfWeek;
-
-            Console.WriteLine($"========= {today}'s Habits =========");
 
             foreach (var habit in AllHabits)
             {
@@ -182,8 +48,107 @@ namespace HabitTracker.Services
                 }
             }
 
-            return TodayHabits ?? null;
+            return TodayHabits;
 
+        }
+
+        public OperationStatus CreateHabit(Habit? newHabit)
+        {
+            if (newHabit == null)
+                return OperationStatus.NULL_VALUE;
+            idCounter++;
+            newHabit.Id = idCounter;
+            AllHabits.Add(newHabit);
+            SaveHabitToJSON(AllHabits);
+            return OperationStatus.SUCCESS;
+        }
+        public OperationStatus DeleteHabit(Habit desiredHabit)
+        {
+            if (AllHabits.Remove(desiredHabit))
+            {
+                idCounter--;
+                //sync all IDs with the new order after deletion
+                for (int i = 0; i < AllHabits.Count; i++)
+                {
+                    AllHabits[i].Id = i + 1;
+                }
+                SaveHabitToJSON(AllHabits);
+                return OperationStatus.SUCCESS;
+            }
+            else
+            {
+                return OperationStatus.FAILURE;
+            }
+
+
+        }
+        public OperationStatus EditHabit(int id, string newName, string newDescription, Habit.Day newFreq)
+        {
+            Habit desiredHabit = AllHabits[id - 1];
+            desiredHabit.Name = (newName == "") ? desiredHabit.Name : newName;
+            desiredHabit.Description = (newDescription == "") ? desiredHabit.Description : newDescription;
+            desiredHabit.Frequency = (newFreq == 0) ? desiredHabit.Frequency : newFreq;
+            SaveHabitToJSON(AllHabits);
+            return OperationStatus.SUCCESS;
+        }
+        public OperationStatus MarkHabitAsDone(Habit desiredHabit)
+        {
+            OperationStatus status;
+            if (!desiredHabit.MarkedAsDone)
+            {
+                desiredHabit.MarkedAsDone = true;
+                status = OperationStatus.SUCCESS;
+            }
+
+            else
+            {
+                status = OperationStatus.FAILURE;
+            }
+
+            return status;
+
+        }
+        public OperationStatus UndoMarkedHabit(Habit desiredHabit)
+        {
+            OperationStatus status;
+            if (desiredHabit.MarkedAsDone)
+            {
+                desiredHabit.MarkedAsDone = false;
+                status = OperationStatus.SUCCESS;
+            }
+
+            else
+                status = OperationStatus.FAILURE;
+            return status;
+        }
+        public void ClearList(List<Habit> AllHabits)
+        {
+            AllHabits.Clear();
+            SaveHabitToJSON(AllHabits);
+        }
+
+        // save all habits in the list to a JSON file
+        private void SaveHabitToJSON(List<Habit> AllHabits)
+        {
+            //convert c# object to json
+            string JsonString = JsonSerializer.Serialize(AllHabits, new JsonSerializerOptions { WriteIndented = true });
+
+            //Write to Json file
+            File.WriteAllText(JsonFilePath, JsonString);
+        }
+        private List<Habit> LoadHabitsFromJSON()
+        {
+            if (!File.Exists(JsonFilePath))
+                return new List<Habit>();
+            //read from Json file
+            string JsonString = File.ReadAllText(JsonFilePath);
+
+            //Convert to C# object
+            List<Habit>? habits = JsonSerializer.Deserialize<List<Habit>>(JsonString);
+
+            //finally, return the list of habits
+            //or in case of an empty json file return an empty list
+            return habits ?? new List<Habit>();
         }
 
     }

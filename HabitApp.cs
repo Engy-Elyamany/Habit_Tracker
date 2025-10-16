@@ -1,5 +1,3 @@
-using System.ComponentModel.Design;
-using System.Net.NetworkInformation;
 using HabitTracker.Models;
 using HabitTracker.Services;
 using HabitTracker.UI;
@@ -13,15 +11,10 @@ namespace HabitTracker
         {
             int userChoice = 1;
 
-
             while (userChoice != 0)
             {
                 HabitOutput.PrintMainMenu();
-                if (!HabitInput.GetValidUserChoiceFromMenu(ref userChoice, "Choose from Main Menu", 0, 8))
-                {
-                    HabitOutput.PrintMainMenu();
-                    continue;
-                }
+                userChoice = HabitInput.GetValidUserChoiceFromMenu("Choose from Main Menu", 0, 8);
                 switch (userChoice)
                 {
                     case 1:
@@ -60,34 +53,38 @@ namespace HabitTracker
                 }
             }
         }
-
-        private Habit ChooseHabitByID()
+        private int ChooseHabitByID()
         {
-            int getUserChoiceFromMenu;
-            Habit desiredHabit = new();
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Choose a Habit by id:");
                 Console.ResetColor();
-                
-                getUserChoiceFromMenu = Convert.ToInt32(Console.ReadLine());
-                var check = manager.HabitExistinList(getUserChoiceFromMenu, ref desiredHabit);
-                if (check == HabitManager.operationStatus.INVALID_INPUT)
+
+                if (int.TryParse(Console.ReadLine(), out int UserChoiceFromMenu))
                 {
-                    Console.WriteLine("Invalid ID! The intended habit doesn't exist");
-                    continue;
+                    var check = manager.HabitExistinList(UserChoiceFromMenu);
+                    if (check == HabitManager.OperationStatus.INVALID_INPUT)
+                    {
+                        Console.WriteLine("Invalid ID! The intended habit doesn't exist");
+                        continue;
+                    }
+                    return UserChoiceFromMenu;
                 }
-                return desiredHabit;
+                else
+                {
+                    Console.WriteLine("Invalid Input, please enter only digits");
+                    return (int)HabitManager.OperationStatus.INVALID_INPUT;
+                }
+
             }
         }
-
         private void CreateHabit()
         {
             Console.WriteLine("========= Create Habit =========");
             var newHabit = HabitInput.ReadHabitFromUser();
-            HabitManager.operationStatus status = manager.CreateHabit(newHabit);
-            if (status == HabitManager.operationStatus.NULL_VALUE)
+            HabitManager.OperationStatus status = manager.CreateHabit(newHabit);
+            if (status == HabitManager.OperationStatus.NULL_VALUE)
             {
                 Console.WriteLine("Habit Creation Failed! Please Try again");
             }
@@ -100,9 +97,16 @@ namespace HabitTracker
         {
             Console.WriteLine("========= Delete Habit =========");
             HabitOutput.ViewHabits(manager.AllHabits);
-            var desiredHabit = ChooseHabitByID();
-            HabitManager.operationStatus status = manager.DeleteHabit(desiredHabit);
-            if (status == HabitManager.operationStatus.SUCCESS)
+
+            //get valid id from user 
+            int desiredHabitId = ChooseHabitByID();
+
+            //get corresponding Habit to the id
+            Habit desiredHabit = manager.AllHabits[desiredHabitId - 1];
+
+            HabitManager.OperationStatus status = manager.DeleteHabit(desiredHabit);
+
+            if (status == HabitManager.OperationStatus.SUCCESS)
             {
                 Console.WriteLine("Habit Deleted Successfuly");
             }
@@ -116,11 +120,50 @@ namespace HabitTracker
         {
             Console.WriteLine("========= Edit Habit =========");
             HabitOutput.ViewHabits(manager.AllHabits);
-            var desiredHabit = ChooseHabitByID();
+
+            //get valid id from user 
+            int desiredHabitId = ChooseHabitByID();
+
+            //get corresponding Habit to the id
+            Habit desiredHabit = manager.AllHabits[desiredHabitId - 1];
+
+
+            //print Edit Menu
             HabitOutput.PrintEditMenu();
 
-            HabitManager.operationStatus status = manager.EditHabit(desiredHabit);
-            if (status == HabitManager.operationStatus.SUCCESS)
+
+            int userChoice = 1;
+            string? newHabitName = "";
+            string? newHabitDescription = "";
+            Habit.Day newHabitFrequency = 0;
+            while (userChoice != 0)
+            {
+                //user's choice from edit menu
+                userChoice = HabitInput.GetValidUserChoiceFromMenu("Your Choice to edit", 0, 3);
+
+                //take new edited habit from user
+                switch (userChoice)
+                {
+                    case 1:
+                        newHabitName = HabitInput.GetValidString("Enter The new Habit Name");
+                        break;
+                    case 2:
+                        newHabitDescription = HabitInput.GetValidString("Enter The new Habit Description");
+                        break;
+                    case 3:
+                        newHabitFrequency = HabitInput.GetHabitFrequencyWeekly("Enter The new Habit Frequency");
+                        break;
+                    default:
+                        userChoice = 0;
+                        break;
+                }
+            }
+
+            //delegate to manager to perform logic
+            HabitManager.OperationStatus status = manager.EditHabit(desiredHabitId, newHabitName,newHabitDescription,newHabitFrequency);
+
+            //Feedback to user
+            if (status == HabitManager.OperationStatus.SUCCESS)
             {
                 Console.WriteLine("Habit Edited Successfuly");
             }
@@ -130,12 +173,12 @@ namespace HabitTracker
             }
 
         }
-
         private void ViewTodayHabits()
         {
-            List<Habit>? TodayHabitList = HabitManager.TodayHabits(manager.AllHabits);
 
-            if (TodayHabitList == null)
+            Console.WriteLine($"========= Today's Habits =========");
+            List<Habit> TodayHabitList = manager.TodayHabits(manager.AllHabits);
+            if (TodayHabitList.Count == 0)
             {
                 Console.WriteLine("No Habits for Today");
                 return;
@@ -149,9 +192,14 @@ namespace HabitTracker
 
             ViewTodayHabits();
 
-            var desiredHabit = ChooseHabitByID();
-            HabitManager.operationStatus status = HabitManager.MarkHabitAsDone(desiredHabit);
-            if (status == HabitManager.operationStatus.SUCCESS)
+            //get valid id from user 
+            int desiredHabitId = ChooseHabitByID();
+
+            //get corresponding Habit to the id
+            Habit desiredHabit = manager.AllHabits[desiredHabitId - 1];
+
+            HabitManager.OperationStatus status = manager.MarkHabitAsDone(desiredHabit);
+            if (status == HabitManager.OperationStatus.SUCCESS)
             {
                 Console.WriteLine("Habit Marked As Done");
             }
@@ -165,9 +213,15 @@ namespace HabitTracker
         {
             Console.WriteLine("========= Undo compeletion =========");
             //HabitOutput.ViewHabits(manager.AllHabits);
-            var desiredHabit = ChooseHabitByID();
-            HabitManager.operationStatus status = HabitManager.UndoMarkedHabit(desiredHabit);
-            if (status == HabitManager.operationStatus.SUCCESS)
+
+            //get valid id from user 
+            int desiredHabitId = ChooseHabitByID();
+
+            //get corresponding Habit to the id
+            Habit desiredHabit = manager.AllHabits[desiredHabitId - 1];
+
+            HabitManager.OperationStatus status = manager.UndoMarkedHabit(desiredHabit);
+            if (status == HabitManager.OperationStatus.SUCCESS)
             {
                 Console.WriteLine("Compeletion Undone");
             }
@@ -177,7 +231,6 @@ namespace HabitTracker
             }
 
         }
-
         private void ClearList()
         {
             manager.ClearList(manager.AllHabits);

@@ -6,47 +6,73 @@ namespace HabitTracker.UI
     class HabitInput
     {
 
-        public static bool GetValidUserChoiceFromMenu(ref int Choice, string printStatement, int validationRangeStart, int validationRangeEnd)
+        //returns valid choice from Menu
+        public static int GetValidUserChoiceFromMenu(string printStatement, int validationRangeStart, int validationRangeEnd)
         {
-            bool validChoice = true;
-            
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(printStatement + ": ");
             Console.ResetColor();
 
-            Choice = Convert.ToInt32(Console.ReadLine());
-            if (Choice > validationRangeEnd || Choice < validationRangeStart)
+            while (true)
             {
-                Console.WriteLine("Invalid Input, Please choose from menu ");
-                validChoice = false;
+                if (int.TryParse(Console.ReadLine(), out int Choice))
+                {
+                    if (Choice > validationRangeEnd || Choice < validationRangeStart)
+                    {
+                        Console.WriteLine("Invalid Input, out of range, Please choose from menu ");
+                        continue;
+                    }
+                    return Choice;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Input, please enter only digits");
+                }
             }
-            return validChoice;
+
+
         }
-        public static void GetValidString(ref string? str, string printStatement)
+        public static string GetValidString(string printStatement)
         {
-            do
+            string? str;
+            bool notValidString;
+
+            while (true)
             {
                 Console.Write(printStatement + ": ");
                 str = Console.ReadLine();
-                if (InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str))
+                if(str == null)
+                {
+                    System.Console.WriteLine("This input can't be empty");
+                    continue;
+                }
+                notValidString = InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str);
+                if (notValidString)
                 {
                     Console.WriteLine("Please Enter a valid Input");
+                    continue;
                 }
-            } while (InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str));
-        }
-        public static void GetHabitFrequencyWeekly(ref Habit.Day HabitFrequency, string printStatement)
-        {
-            Console.WriteLine(printStatement + "\n");
-            Habit.Day choosenFreqDay = 0;
-            int userChoice = 1;
+                return str;
 
+            }
+        }
+        public static Habit.Day GetHabitFrequencyWeekly(string printStatement)
+        {
+            Habit.Day HabitFrequency = 0;
+            Habit.Day choosenFreqDay = 0;
+            int userDayChoice = 1;
+
+            //Dynamic print statement to use it in Create and Edit for better UI
+            Console.WriteLine(printStatement + "\n");
+
+            //print Days of the week menu to choose from
             HabitOutput.PrintDaysMenu();
 
-            while (userChoice != 0)
+            //loop to accept multiple days
+            while (userDayChoice != 0)
             {
-                if (!GetValidUserChoiceFromMenu(ref userChoice, "Your Day Choice", 0, 8))
-                    continue;
-                switch (userChoice)
+                userDayChoice = GetValidUserChoiceFromMenu("Your Day Choice", 0, 8);
+                switch (userDayChoice)
                 {
                     case 1:
                         choosenFreqDay = Habit.Day.SAT;
@@ -71,30 +97,32 @@ namespace HabitTracker.UI
                         break;
                     case 8:
                         choosenFreqDay = Habit.Day.ALLWEEK;
-                        userChoice = 0;
+                        userDayChoice = 0;
                         break;
                     default:
                         break;
                 }
+
                 HabitFrequency |= choosenFreqDay;
+
             }
+            return HabitFrequency;
+
         }
         public static Habit? ReadHabitFromUser()
         {
-            string? InputName = "Default Habit Name";
-            string? InputDescription = "Default Habit Description";
-            Habit.Day HabitFrequency = 0;
+            string? InputName;
+            string? InputDescription;
+            Habit.Day HabitFrequency;
 
-            GetValidString(ref InputName, "Enter Habit Name: ");
-            GetValidString(ref InputDescription, "Enter Habit Description: ");
-            GetHabitFrequencyWeekly(ref HabitFrequency, "Choose Your Habit Frequency");
+            InputName = GetValidString("Enter Habit Name") ?? "Default Name";
+            InputDescription = GetValidString("Enter Habit Description") ?? "Default Description";
+            HabitFrequency = GetHabitFrequencyWeekly("Choose Your Habit Frequency");
 
             Console.WriteLine();
 
-            return new Habit(InputName, InputDescription, HabitFrequency) ?? null;
+            return new Habit(InputName, InputDescription, HabitFrequency);
 
         }
-
-
     }
 }
