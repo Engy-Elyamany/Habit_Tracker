@@ -26,6 +26,8 @@ namespace HabitTracker.Services
             idCounter = AllHabits.Count;
 
         }
+
+        //checks if the given id is within the list
         public OperationStatus HabitExistinList(int userIdChoice)
         {
             if (userIdChoice < 1 || userIdChoice > AllHabits.Count)
@@ -34,6 +36,8 @@ namespace HabitTracker.Services
             }
             return OperationStatus.VALID;
         }
+
+        //returns a list with all today's habits
         public List<Habit> TodayHabits(List<Habit> AllHabits)
         {
             List<Habit> TodayHabits = new List<Habit>();
@@ -41,9 +45,20 @@ namespace HabitTracker.Services
 
             foreach (var habit in AllHabits)
             {
+                //GET_BIT operation: retuns the bit (0 or 1) of the given index (today) from a binary value (habit.Frequency)
+                //Tuesday = 2 in DayOfWeek (built-in),
+                //so, this operation checks the second bit(starting from bit no. 0) in habit.Frequency which is binary
+                //isTheHabitToday will be true if Tuesday is in habit.Frequency
+                //because TUE = 0b_0000_0100 (index 2 is set to one)
+
                 bool isTheHabitToday = Convert.ToBoolean(((int)habit.Frequency >> (int)today) & 1);
                 if (isTheHabitToday)
                 {
+                    //if the habit is today
+                    // uncheck it to (not done) if it was aleady checked as (done)
+                    UndoMarkedHabit(habit);
+
+                    //add to Today's Habits list
                     TodayHabits.Add(habit);
                 }
             }
@@ -56,9 +71,15 @@ namespace HabitTracker.Services
         {
             if (newHabit == null)
                 return OperationStatus.NULL_VALUE;
+
+            //increment the counter from the last habit
             idCounter++;
             newHabit.Id = idCounter;
+
+            // add the habit to the general list
             AllHabits.Add(newHabit);
+
+            //saves the new list to json
             SaveHabitToJSON(AllHabits);
             return OperationStatus.SUCCESS;
         }
@@ -66,13 +87,18 @@ namespace HabitTracker.Services
         {
             if (AllHabits.Remove(desiredHabit))
             {
+                //decrement the overall idCounter
                 idCounter--;
+
                 //sync all IDs with the new order after deletion
                 for (int i = 0; i < AllHabits.Count; i++)
                 {
                     AllHabits[i].Id = i + 1;
                 }
+
+                //save the new changes to json
                 SaveHabitToJSON(AllHabits);
+
                 return OperationStatus.SUCCESS;
             }
             else
@@ -84,24 +110,35 @@ namespace HabitTracker.Services
         }
         public OperationStatus EditHabit(int id, string newName, string newDescription, Habit.Day newFreq)
         {
+            //get the corresponding habit to the povided id
             Habit desiredHabit = AllHabits[id - 1];
+
+            //assign all new data while keeping existing data that wasn't updated as is
             desiredHabit.Name = (newName == "") ? desiredHabit.Name : newName;
             desiredHabit.Description = (newDescription == "") ? desiredHabit.Description : newDescription;
             desiredHabit.Frequency = (newFreq == 0) ? desiredHabit.Frequency : newFreq;
+
+            //save all new changes to json
             SaveHabitToJSON(AllHabits);
+
             return OperationStatus.SUCCESS;
         }
         public OperationStatus MarkHabitAsDone(Habit desiredHabit)
         {
             OperationStatus status;
+
+            //if the habit is (not done)
             if (!desiredHabit.MarkedAsDone)
             {
+                //mark as (done)
                 desiredHabit.MarkedAsDone = true;
                 status = OperationStatus.SUCCESS;
             }
 
+            //if habit aleasy marked as (done)
             else
             {
+                //report that to user
                 status = OperationStatus.FAILURE;
             }
 
@@ -111,23 +148,34 @@ namespace HabitTracker.Services
         public OperationStatus UndoMarkedHabit(Habit desiredHabit)
         {
             OperationStatus status;
+
+            //if the habit is marked as (done)
             if (desiredHabit.MarkedAsDone)
             {
+                //undo compeletion
                 desiredHabit.MarkedAsDone = false;
                 status = OperationStatus.SUCCESS;
             }
 
+            //if the habit already not marked
             else
-                status = OperationStatus.FAILURE;
+                status = OperationStatus.FAILURE; //report to user
             return status;
         }
-        public void ClearList(List<Habit> AllHabits)
+
+        public OperationStatus ClearList(List<Habit> AllHabits)
         {
+            if (AllHabits.Count == 0)
+            {
+                return OperationStatus.FAILURE;
+            }
             AllHabits.Clear();
             SaveHabitToJSON(AllHabits);
+            return OperationStatus.SUCCESS;
+
         }
 
-        // save all habits in the list to a JSON file
+        // save data form the list to a JSON file
         private void SaveHabitToJSON(List<Habit> AllHabits)
         {
             //convert c# object to json
@@ -136,6 +184,8 @@ namespace HabitTracker.Services
             //Write to Json file
             File.WriteAllText(JsonFilePath, JsonString);
         }
+
+        //load data from json to list<>
         private List<Habit> LoadHabitsFromJSON()
         {
             if (!File.Exists(JsonFilePath))

@@ -6,7 +6,8 @@ namespace HabitTracker.UI
     class HabitInput
     {
 
-        //returns valid choice from Menu
+        //returns valid choice from Menu 
+        //that is within the provided range and is a valid Int input
         public static int GetValidUserChoiceFromMenu(string printStatement, int validationRangeStart, int validationRangeEnd)
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -39,11 +40,13 @@ namespace HabitTracker.UI
 
             while (true)
             {
+                //statement to prompt the user for the input
                 Console.Write(printStatement + ": ");
+
                 str = Console.ReadLine();
-                if(str == null)
+                if (str == null)
                 {
-                    System.Console.WriteLine("This input can't be empty");
+                    Console.WriteLine("This input can't be empty");
                     continue;
                 }
                 notValidString = InputValidator.IsContainNullOrWhiteSpace(str) || InputValidator.IsContainDigitsOrChar(str);
@@ -62,7 +65,7 @@ namespace HabitTracker.UI
             Habit.Day choosenFreqDay = 0;
             int userDayChoice = 1;
 
-            //Dynamic print statement to use it in Create and Edit for better UI
+            //Dynamic print statement to prompt the user for the input
             Console.WriteLine(printStatement + "\n");
 
             //print Days of the week menu to choose from
@@ -71,7 +74,9 @@ namespace HabitTracker.UI
             //loop to accept multiple days
             while (userDayChoice != 0)
             {
-                userDayChoice = GetValidUserChoiceFromMenu("Your Day Choice", 0, 8);
+                int dayMenuStartChoice = 1;
+                int dayMenuEndChoice = 8;
+                userDayChoice = GetValidUserChoiceFromMenu("Your Day Choice", dayMenuStartChoice - 1, dayMenuEndChoice);
                 switch (userDayChoice)
                 {
                     case 1:
@@ -103,24 +108,28 @@ namespace HabitTracker.UI
                         break;
                 }
 
+                // add the choice to the Frequency of the Habit
+                // we used '|' because Habit.Day is a flag enum (binary) 
                 HabitFrequency |= choosenFreqDay;
 
             }
             return HabitFrequency;
 
         }
-        public static Habit? ReadHabitFromUser()
+        public static Habit ReadHabitFromUser()
         {
             string? InputName;
             string? InputDescription;
             Habit.Day HabitFrequency;
 
-            InputName = GetValidString("Enter Habit Name") ?? "Default Name";
-            InputDescription = GetValidString("Enter Habit Description") ?? "Default Description";
+            //get data from user
+            InputName = GetValidString("Enter Habit Name");
+            InputDescription = GetValidString("Enter Habit Description");
             HabitFrequency = GetHabitFrequencyWeekly("Choose Your Habit Frequency");
 
             Console.WriteLine();
 
+            //return a habit with the new data
             return new Habit(InputName, InputDescription, HabitFrequency);
 
         }

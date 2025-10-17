@@ -8,22 +8,24 @@ namespace HabitTracker.UI
         public static void ViewHabits(List<Habit> AllHabits)
         {
 
-            if (AllHabits == null)
+            if (AllHabits.Count == 0)
             {
                 Console.WriteLine("Empty List! Nothing to display");
                 return;
             }
 
+            //using ConsoleTable to view habits as table
             var table = new ConsoleTable("ID", "Name", "Description", "Frequency", "Status");
             foreach (var Habit in AllHabits)
             {
+                //View status as string instead of bool
                 string habitStatusString = Habit.MarkedAsDone ? "Done" : "Not Done";
 
                 //add each habit to the table
                 table.AddRow(Habit.Id, Habit.Name, Habit.Description, Habit.Frequency, habitStatusString);
             }
-            //display the table
 
+            //display the table
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             table.Write(Format.Alternative);
             Console.ResetColor();
@@ -62,7 +64,7 @@ namespace HabitTracker.UI
             "\n");
             Console.ResetColor();
         }
-       public static void PrintDaysMenu()
+        public static void PrintDaysMenu()
         {
             Console.WriteLine(
                 "1.Saturday\n" +
@@ -80,16 +82,5 @@ namespace HabitTracker.UI
             "\n");
             Console.ResetColor();
         }
-        private static void ViewHabitsID(Habit habit)
-        {
-            string habitStatusString = habit.MarkedAsDone ? "Done" : "Not Done";
-            Console.WriteLine(
-                $"ID = {habit.Id} , " +
-                $"Name = {habit.Name} , " +
-                $"Status = {habitStatusString}\n"
-                );
-        }
-
-
     }
 }
