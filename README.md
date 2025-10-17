@@ -3,7 +3,9 @@
 
 A console-based habit tracking application built with C# and .NET 9.
 
-![alt text](image-4.png)![alt text](image-3.png)
+
+<img width="259" height="275" alt="Capture" src="https://github.com/user-attachments/assets/311cfbc5-4b12-4635-a8da-954fd27b45fd" /> <img width="791" height="262" alt="image-3" src="https://github.com/user-attachments/assets/6294319f-8cf5-4db2-969d-403be79c5b3c" />
+
 
 ## 📜 Features
 - Create, read, update, and delete habits
@@ -49,7 +51,7 @@ HabitTracker/
 
 │   └── HabitOutput.cs
 
-├──**Utilities**/   
+├── **Utilities**/   
 
 │   └── InputValidator.cs
 
