@@ -3,6 +3,8 @@
 
 A console-based habit tracking application built with C# and .NET 9.
 
+![alt text](image-4.png)![alt text](image-3.png)
+
 ## 📜 Features
 - Create, read, update, and delete habits
 - Track habits by day of the week
